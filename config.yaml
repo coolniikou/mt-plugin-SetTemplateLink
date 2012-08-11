@@ -1,0 +1,34 @@
+id: SetTemplateLink
+key: SetTemplateLink
+name: Set Template Link
+version: 1.0
+description: SetTemplateLink
+author_name: <__trans phrase="_PLUGIN_AUTHOR">
+author_link: http://www.example.com/about/
+doc_link: http://www.example.com/docs/
+
+
+blog_config_template: set_template_path.tmpl
+
+settings:
+    set_template_path:
+        scope: blog
+
+applications:
+    cms:
+        page_actions:
+            list_templates:
+                set_linkedfile_templates:
+                    label: SetLinkdFileTemplates
+                    order: 1000
+                    permit_action: administers
+                    condition: $SetTemplateLink::SetTemplateLink::Plugin::can_use_set
+
+                    mode: set_linkedfile_templates
+                    dialog: 1
+
+        methods:
+            set_linkedfile_templates: $SetTemplateLink::SetTemplateLink::Plugin::hdlr_set_linkedfile_templates
+
+callbacks:
+    MT::App::CMS::template_param.edit_template: $SetTemplateLink::SetTemplateLink::Transformer::hdlr_template_param_edit_template
