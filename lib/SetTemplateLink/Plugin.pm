@@ -1,7 +1,7 @@
 package SetTemplateLink::Plugin;
 
 use strict;
-use Data::Dumper;
+use File::Spec;
 
 sub can_use_set {
     my $app = MT->app;
@@ -30,9 +30,10 @@ sub hdlr_set_linkedfile_templates {
     }
 
     if ( $fmgr->exists($path) && $fmgr->can_write($path) ) {
-        my @temps = MT::Template->load({ blog_id => $blog_id }, { sort => 'id' });
-		my $index = 1;
-		foreach my $temp ( @temps ) {
+        my @temps =
+          MT::Template->load( { blog_id => $blog_id }, { sort => 'id' } );
+        my $index = 1;
+        foreach my $temp (@temps) {
             my $template_id = $temp->id;
             my $basename    = $temp->identifier . '.mtml';
             my $linked_path = File::Spec->catfile( $path, $basename );
@@ -45,15 +46,18 @@ sub hdlr_set_linkedfile_templates {
                     $temp->errstr
                 )
               );
-			$app->log(
-				{ message => "$index : ". $temp->linked_file. " : ". $temp->id },
-			);
-			$index++;
+            $app->log(
+                {
+                        message => "Success!! template-id[". $tmp->id. "]"
+                      . $temp->linked_file . "[$index]."
+                },
+            );
+            $index++;
         }
 
-		my %param;
-		$param{success} = "Success linked_file set $index template file.";
-		$app->load_tmpl('modal_window.tmpl', \%param);
+        my %param;
+        $param{success} = "Success linked_file set $index template file.";
+        $app->load_tmpl( 'modal_window.tmpl', \%param );
     }
     else {
         return $app->error(

@@ -4,9 +4,9 @@ name: Set Template Link
 version: 1.0
 description: SetTemplateLink
 author_name: <__trans phrase="_PLUGIN_AUTHOR">
-author_link: http://www.example.com/about/
-doc_link: http://www.example.com/docs/
-
+author_link: http://weblibrary.s224.xrea.com/weblog/
+doc_link: https://github.com/coolniikou/mt-plugin-SetTemplateLink 
+l10n_class: SetTemplateLink::L10N
 
 blog_config_template: set_template_path.tmpl
 
@@ -23,7 +23,6 @@ applications:
                     order: 1000
                     permit_action: administers
                     condition: $SetTemplateLink::SetTemplateLink::Plugin::can_use_set
-
                     mode: set_linkedfile_templates
                     dialog: 1
 
