@@ -1,6 +1,7 @@
 package SetTemplateLink::Plugin;
 
 use strict;
+use Data::Dumper;
 
 sub can_use_set {
     my $app = MT->app;
@@ -39,10 +40,9 @@ sub hdlr_set_linkedfile_templates {
 		            my $linked_path = File::Spec->catfile( $path, $basename );
 		            $temp->linked_file($linked_path);
 
-								my $c = $fmgr->get_data($linked_path);
-								$temp->text($c);
+								#my $c = $fmgr->get_data($linked_path);
+								#$temp->text($c);
 								$temp->build_type(1);
-
 		            $temp->save
 		              or die $app->error(
 		                $plugin->translate(
