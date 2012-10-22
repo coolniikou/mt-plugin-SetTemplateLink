@@ -5,24 +5,35 @@ use File::Spec;
 use Data::Dumper;
 
 sub hdlr_template_source_edit_template {
-		my ($cb, $app, $tmpl_ref) = @_;
-		my $jquery_old = <<EOF; 
+    my ($cb, $app, $tmpl_ref) = @_;
+    my $jquery_old = <<EOF; 
     jQuery('button.save, button.publish').click(function() {
         syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('save');
     });
 EOF
-		$jquery_old = quotemeta($jquery_old);
-		$jquery_old =~ s!(\\ )+!\\s+!g;
-		my $jquery_new = <<EOF;
+    $jquery_old = quotemeta($jquery_old);
+    $jquery_old =~ s!(\\ )+!\\s+!g;
+    my $jquery_new = <<EOF;
     jQuery('button.save, button.publish').click(function() {
         syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('save');
     });
-    jQuery('input#linked_file').val( jQuery('input#linked_file').val().replace(/([^\/]+?)\$/, jQuery('input#title').val()+ "\.mtml"));
-		jQuery('button.save').focus();
+    if(jQuery('#title').val()) {
+        jQuery('input#linked_file').val( jQuery('input#linked_file').val().replace(/([^\/]+?)\$/, jQuery('input#title').val()+ "\.mtml"));
+        jQuery('button.save').focus();
+    }
+    else {
+        jQuery('#title')
+          .on('blur, keydown, keyup', function() {
+                  var input = jQuery('#title').val()
+                  , change = jQuery('#linked_file').val()
+                      .replace(/[^\/]+\$/, input+ "\.mtml");
+           				jQuery('#linked_file').val(change);
+						});
+    }
 EOF
-		$$tmpl_ref =~ s!$jquery_old!$jquery_new!;
+    $$tmpl_ref =~ s!$jquery_old!$jquery_new!;
 }
 
 sub hdlr_template_param_edit_template {
