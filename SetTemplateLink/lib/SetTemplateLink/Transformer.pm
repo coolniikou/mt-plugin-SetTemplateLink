@@ -17,19 +17,17 @@ EOF
     jQuery(window).bind('pre_autosave', function(){
         syncEditor();
     });
-    if(!jQuery('#title').val().match(/[^\x01-\x7E]/g)) {
+    if(jQuery('#title').val() && !jQuery('#title').val().match(/[^\x01-\x7E]|Abou/g)) {
         jQuery('input#linked_file').val( jQuery('input#linked_file').val().replace(/([^\/]+?)\$/, jQuery('input#title').val()+ "\.mtml"));
         jQuery('button.save').focus();
     }
-    else {
-        jQuery('#title')
-          .on('blur, keydown, keyup', function() {
-                  var input = jQuery('#title').val()
-                  , change = jQuery('#linked_file').val()
-                      .replace(/[^\/]+\$/, input+ "\.mtml");
-           				jQuery('#linked_file').val(change);
-						});
-    }
+    
+    jQuery('#title').on('blur, keydown, keyup', function() {
+                        var input = jQuery('#title').val()
+                        , change = jQuery('#linked_file').val()
+                            .replace(/[^\/]+\$/, input+ "\.mtml");
+                        jQuery('#linked_file').val(change);
+	                });
 EOF
     $$tmpl_ref =~ s!$jquery_old!$jquery_new!;
 }
