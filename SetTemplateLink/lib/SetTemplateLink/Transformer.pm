@@ -36,23 +36,25 @@ EOF
 
 sub hdlr_template_param_edit_template {
     my ( $cb, $app, $param, $tmpl ) = @_;
-    my $q           = $app->param;
-    my $blog_id     = $q->param('blog_id');
-    my $template_id = $q->param('id');
+    my $blog_id     = $param->{blog_id};
     my $plugin  = MT->component('SetTemplateLink');
     my $config_path =
       $plugin->get_config_value( 'set_template_path', "blog:$blog_id" );
-    $app->log({  message => $config_path });
-    my $template    = MT::Template->load($template_id);
-    $app->log({  message => Dumper($template) });
-    my $linked_file =
-        $template->linked_file()
-      ? $template->linked_file 
-      : sub {
-        my $basename = $template->identifier . '.mtml';
-        return File::Spec->catfile( $config_path, $basename );
-      };
-    $param->{linked_file} = $linked_file if !$param->{linked_file};
+    if($param->{id}) {
+        my $template    = MT::Template->load($param->{id});
+        my $linked_file =
+            $template->linked_file()
+          ? $template->linked_file 
+          : sub {
+            my $basename = $template->identifier . '.mtml';
+            return File::Spec->catfile( $config_path, $basename );
+          };
+        $param->{linked_file} = $linked_file if !$param->{linked_file};
+    }
+    else {
+        my $linked_file = File::Spec->catfile($config_path. ".mtml");
+        $param->{linked_file} = $linked_file;
+    }
 }
 
 1;
