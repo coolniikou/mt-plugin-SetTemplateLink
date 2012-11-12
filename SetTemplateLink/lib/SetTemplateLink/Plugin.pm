@@ -39,7 +39,6 @@ sub hdlr_set_linkedfile_templates {
         while ( my $temp = $temp_iter->() ) {
             my $template_id = $temp->id;
             my $template_name = $temp->name;
-            push(@steps, "Success setting: $template_name");
             my $basename    = $temp->identifier . '.mtml';
             my $linked_path = File::Spec->catfile( $path, $basename );
             $temp->linked_file($linked_path);
@@ -54,42 +53,7 @@ sub hdlr_set_linkedfile_templates {
             $app->log( { 
                 message => "Success: templateId: $template_id linked path setting " } );
 
-            if ( $temp->build_type ) {
-                if ( $temp->type eq 'index' ) {
-                    $q->param( 'type',            'index-' . $temp->id );
-                    $q->param( 'tmpl_id',         $temp->id );
-                    $q->param( 'single_template', 1 );
-                    require MT::CMS::Blog;
-                    MT::CMS::Blog::rebuild_pages($app);
-                }
-                elsif ($temp->type eq 'archive'
-                    || $temp->type eq 'category'
-                    || $temp->type eq 'page'
-                    || $temp->type eq 'individual' )
-                {
-                    my $static_maps = delete $app->{static_dynamic_maps};
-                    require MT::TemplateMap;
-                    my $terms = { blog_id => $blog_id };
-
-                    if (%$terms) {
-                        my @maps = MT::TemplateMap->load($terms);
-                        my @ats = map { $_->archive_type } @maps;
-                        if ( $#ats >= 0 ) {
-                            $q->param( 'type', join( ',', @ats ) );
-                            $q->param( 'with_indexes',    1 );
-                            $q->param( 'no_static',       1 );
-                            $q->param( 'template_id',     $temp->id );
-                            $q->param( 'single_template', 1 );
-                            require MT::CMS::Blog;
-                            MT::CMS::Blog::start_rebuild_pages($app);
-                         }
-                    }
-                }
-            }
         }
-        #my %param;
-        #my $json_steps = MT::Util::to_json(\@steps);
-        #$param{json_steps} = $json_steps;
         $app->call_return;
     }
     else {
