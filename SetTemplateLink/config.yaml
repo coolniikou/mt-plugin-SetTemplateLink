@@ -30,3 +30,4 @@ applications:
 callbacks:
     MT::App::CMS::template_param.edit_template: $SetTemplateLink::SetTemplateLink::Transformer::hdlr_template_param_edit_template
     MT::App::CMS::template_source.edit_template: $SetTemplateLink::SetTemplateLink::Transformer::hdlr_template_source_edit_template
+    MT::App::CMS::template_source.list_common: $SetTemplateLink::SetTemplateLink::Transformer::hdlr_template_source_list_common

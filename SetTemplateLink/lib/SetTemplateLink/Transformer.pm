@@ -36,24 +36,33 @@ sub hdlr_template_param_edit_template {
     my ( $cb, $app, $param, $tmpl ) = @_;
     my $blog_id     = $param->{blog_id};
     my $plugin  = MT->component('SetTemplateLink');
-    if(my $config_path =
-      $plugin->get_config_value( 'set_template_path', "blog:$blog_id" ) ) {
-        if($param->{id}) {
-            my $template    = MT::Template->load($param->{id});
-            my $linked_file =
-                $template->linked_file()
-              ? $template->linked_file 
-              : sub {
-                my $basename = $template->identifier . '.mtml';
-                return File::Spec->catfile( $config_path, $basename );
-              };
-            $param->{linked_file} = $linked_file if !$param->{linked_file};
-        }
-        else {
-            my $linked_file = File::Spec->catfile($config_path. ".mtml");
-            $param->{linked_file} = $linked_file;
-        }
+    my $config_path =
+      $plugin->get_config_value( 'set_template_path', "blog:$blog_id" );
+    if($param->{id}) {
+        my $template    = MT::Template->load($param->{id});
+        my $linked_file =
+            $template->linked_file()
+          ? $template->linked_file 
+          : sub {
+            my $basename = $template->identifier . '.mtml';
+            return File::Spec->catfile( $config_path, $basename );
+          };
+        $param->{linked_file} = $linked_file if !$param->{linked_file};
+    }
+    else {
+        my $linked_file = File::Spec->catfile($config_path. ".mtml");
+        $param->{linked_file} = $linked_file;
     }
 }
 
+sub hdlr_template_source_list_common {
+    my ($cb, $app, $tmpl_ref) = @_;
+    my $old = <<EOF; 
+EOF
+    $old = quotemeta($old);
+    $old =~ s!(\\ )+!\\s+!g;
+    my $new = <<EOF;
+EOF
+    $$tmpl_ref =~ s!$old!$new!;
+}
 1;

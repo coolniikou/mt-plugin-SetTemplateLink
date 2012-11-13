@@ -33,16 +33,21 @@ sub hdlr_set_linkedfile_templates {
     if ( $fmgr->exists($path) && $fmgr->can_write($path) ) {
         require MT::Template;
         my $temp_iter = MT::Template->load_iter( { blog_id => $blog->id } );
-        my $index     = 1;
-        my $q         = $app->param;
-        my @steps;
         while ( my $temp = $temp_iter->() ) {
+            next if( $temp->name =~ /Backup/g);
             my $template_id = $temp->id;
             my $template_name = $temp->name;
-            my $basename    = $temp->identifier . '.mtml';
+            my $basename;
+            if(!$temp->identifier && $temp->name !~ /[^\x01-\x7E]|Backup/) {
+                $basename = lc($temp->name). '.mtml';
+                $temp->identifier( lc($temp->name) );
+            }
+            else {
+                $basename    = $temp->identifier . '.mtml';
+            }
+
             my $linked_path = File::Spec->catfile( $path, $basename );
             $temp->linked_file($linked_path);
-            #$temp->build_type(1);
             $temp->save
               or die $app->error(
                 $plugin->translate(
@@ -51,7 +56,11 @@ sub hdlr_set_linkedfile_templates {
                 )
               );
             $app->log( { 
-                message => "Success: templateId: $template_id linked path setting " } );
+                message => $app->translate(
+                "Success template  set name:[_1], ID :#[_2], type :[_3], Identifier :[_4], LinkedFilePath: [_5]",
+                $temp->name, $temp->id, $temp->type,
+                $temp->identifier, $temp->linked_file),
+            } );
 
         }
         $app->call_return;
